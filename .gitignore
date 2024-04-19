@@ -3,3 +3,5 @@ target/**/*
 GuardianX/src/main/resources/application-local.yml
 GuardianX/target/**/*
 frontend/node_modules/**/*
+lambda_functions/.idea/**/*
+lambda_functions/.venv/**/*
