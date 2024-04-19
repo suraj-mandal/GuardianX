@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: GuardianX
+  profiles:
+    active: ${PROFILE:local}
+
+# in application-local you will be able to see the credential

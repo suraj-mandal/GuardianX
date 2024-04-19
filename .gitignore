@@ -1,0 +1,5 @@
+target/**/*
+.idea/**/*
+GuardianX/src/main/resources/application-local.yml
+GuardianX/target/**/*
+frontend/node_modules/**/*
