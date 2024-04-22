@@ -227,7 +227,7 @@ export default function ChatPage() {
                     </div>
                 </main>
                 <BarLoader width={1700} loading={chatLoading} speedMultiplier={0.4} color="#1d4ed8"/>
-                <footer>
+                <footer className="w-full overflow-x-hidden">
                     <div className="bg-gray-100 py-3 border-t-2 border-gray-200 shadow-sm">
                         <div className="container">
                             <Form {...form}>
