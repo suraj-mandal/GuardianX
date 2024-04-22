@@ -12,7 +12,7 @@ import toast from "react-hot-toast";
 import useAuthentication from "@/hooks/use-authentication";
 import { useNavigate } from "react-router";
 import { UserDto } from "@/models/user-dto.ts";
-import { Menu, Sidebar } from "lucide-react";
+import { Menu } from "lucide-react";
 import {BarLoader} from 'react-spinners';
 import { Separator } from "@/components/ui/separator";
 
