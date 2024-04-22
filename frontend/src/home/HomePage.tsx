@@ -1,12 +1,14 @@
 import useAuthentication from "@/hooks/use-authentication.ts";
-import {useEffect, useState} from "react";
-import {useNavigate} from "react-router";
-import {UserDto} from "@/models/user-dto.ts";
-import {Button} from "@/components/ui/button.tsx";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+import { UserDto } from "@/models/user-dto.ts";
+import { Button } from "@/components/ui/button.tsx";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function HomePage() {
 
-    const {isLoggedIn, logout} = useAuthentication();
+    const { isLoggedIn, logout } = useAuthentication();
     const navigate = useNavigate();
 
     const [name, setName] = useState("");
@@ -30,6 +32,9 @@ export default function HomePage() {
         navigate("/login");
     }
 
+    const enterChatPage = () => {
+        navigate("/chat");
+    }
 
     return (
         <div className="container mt-24 font-inter">
@@ -40,7 +45,32 @@ export default function HomePage() {
                 <Button variant="outline" size="sm" onClick={performLogout}>Logout</Button>
             </nav>
             <div className="mt-12">
-                This will be chatbot section
+                <Card>
+                    <CardHeader>
+                        <div className="flex flex-row gap-x-4 items-center ">
+                            <div>
+                                {/* will display avatar here */}
+                                <Avatar>
+                                    <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+                                    <AvatarFallback>GX</AvatarFallback>
+                                </Avatar>
+                            </div>
+                            <div className="space-y-2">
+                                <CardTitle>GuardianX: Bot</CardTitle>
+                                <CardDescription>Your all weather friend for emergency needs.</CardDescription>
+                            </div>
+                        </div>
+
+                    </CardHeader>
+                    <CardContent>
+                        <p>Please inform me whenever you are facing any kind of emergencies, be it medical, or
+                            involving traffic or any disaster. I will be doing my best to help you out. Thanks
+                        </p>
+                    </CardContent>
+                    <CardFooter>
+                        <Button onClick={enterChatPage}>Enter Chat</Button>
+                    </CardFooter>
+                </Card>
             </div>
         </div>
     );

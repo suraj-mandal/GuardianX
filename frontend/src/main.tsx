@@ -7,6 +7,7 @@ import RegistrationPage from "./register/RegistrationPage.tsx";
 import HomePage from "./home/HomePage.tsx";
 import {RouterProvider} from "react-router";
 import ErrorPage from "./fallback/ErrorPage.tsx";
+import ChatPage from './chat/ChatPage.tsx';
 
 
 const router = createBrowserRouter([
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
             {
                 path: '/register',
                 element: <RegistrationPage/>
+            },
+            {
+                path: '/chat',
+                element: <ChatPage />
             }
         ]
     }
