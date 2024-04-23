@@ -42,6 +42,8 @@ export default function ChatPage() {
 
     const socket = useRef<WebSocket>();
 
+    const userQueryForm = useRef<HTMLFormElement>(null);
+
     const form = useForm<z.infer<typeof ChatFormSchema>>({
         resolver: zodResolver(ChatFormSchema),
         defaultValues: {
@@ -80,39 +82,40 @@ export default function ChatPage() {
         }
     }
 
-    useEffect(() => {
-        socket.current = new WebSocket('wss://zivy0ttms5.execute-api.us-east-1.amazonaws.com/production/');
+    function createWebSocket(init = false) {
+        const newSocket = new WebSocket('wss://zivy0ttms5.execute-api.us-east-1.amazonaws.com/production/');
 
-        setChatLoading(true);
-
-        socket.current.onopen = () => {
+        newSocket.onopen = () => {
             console.log("Opened");
             toast.success("Connection Successful");
 
-            const botWelcomeMessage: ChatModelInterface = {
-                body: "Welcome to <b>GuardianX</b>: Your friend indeed for all emergency situations. Please tell me how can I help you out!",
-                sender: "Bot",
-                id: uuidv4()
+            if (init) {
+                const botWelcomeMessage: ChatModelInterface = {
+                    body: "Welcome to <b>GuardianX</b>: Your friend indeed for all emergency situations. Please tell me how can I help you out!",
+                    sender: "Bot",
+                    id: uuidv4()
+                }
+
+                setChats([botWelcomeMessage]);
             }
 
             setChatLoading(false);
-
-            getLocation();
-
-            setChats([botWelcomeMessage]);
         }
 
-        socket.current.onclose = () => {
+        newSocket.onclose = () => {
             console.log("Closed");
             // toast.error("Connection closed");
         }
 
-        socket.current.onmessage = (event) => {
-            // console.log(event);
-            // const recievedMessage = JSON.parse(event.data);
-            const recievedMessage = JSON.parse(event.data);
+        newSocket.onmessage = (event) => {
+            const receivedMessage = JSON.parse(event.data);
+
+            if (socket.current?.readyState === WebSocket.CLOSED) {
+                socket.current = createWebSocket();
+            }
+
             const botMessage: ChatModelInterface = {
-                body: recievedMessage,
+                body: receivedMessage,
                 sender: "Bot",
                 id: uuidv4()
             }
@@ -121,8 +124,14 @@ export default function ChatPage() {
             setChats((chats) => [...chats, botMessage])
         }
 
-        const currentSocket = socket.current;
+        return newSocket;
+    }
 
+    useEffect(() => {
+        getLocation();
+        setChatLoading(true);
+        socket.current = createWebSocket(true);
+        const currentSocket = socket.current;
         return () => {
             currentSocket.close();
         }
@@ -181,6 +190,17 @@ export default function ChatPage() {
         );
     });
 
+    const submitOnPressingEnter = (e: KeyboardEvent) => {
+        if (e.key.toLowerCase() === 'enter' && !e.shiftKey) {
+            console.log('Enter key pressed!');
+            if (userQueryForm) {
+                e.preventDefault();
+                userQueryForm.current?.requestSubmit();
+            }
+            // form.handleSubmit(onSubmit);
+        }
+    }
+
     return (
         <div className="h-screen flex flex-row overflow-y-hidden font-inter">
             <div className="h-screen flex flex-1 flex-col overflow-y-hidden">
@@ -222,6 +242,7 @@ export default function ChatPage() {
                         <div className="container">
                             <Form {...form}>
                                 <form
+                                    ref={userQueryForm}
                                     className="flex flex-row w-full gap-x-2 items-center"
                                     onSubmit={form.handleSubmit(onSubmit)}>
                                     <FormField
@@ -231,6 +252,7 @@ export default function ChatPage() {
                                             <FormItem className="flex-1">
                                                 <FormControl>
                                                     <Textarea
+                                                        onKeyDown={submitOnPressingEnter}
                                                         rows={1}
                                                         placeholder="Enter your message here" {...field} />
                                                 </FormControl>
