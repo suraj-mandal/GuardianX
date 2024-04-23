@@ -12,10 +12,10 @@ import toast from "react-hot-toast";
 import useAuthentication from "@/hooks/use-authentication";
 import {useNavigate} from "react-router";
 import {UserDto} from "@/models/user-dto.ts";
-import {Menu} from "lucide-react";
-import {BarLoader} from 'react-spinners';
-import {Separator} from "@/components/ui/separator";
+import {SendHorizontal, X} from "lucide-react";
 import {ScrollArea} from "@/components/ui/scroll-area.tsx";
+import ChatLoader from "@/chat/components/ChatLoader.tsx";
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip.tsx";
 
 
 interface ChatModelInterface {
@@ -34,8 +34,6 @@ export default function ChatPage() {
     const [chats, setChats] = useState<ChatModelInterface[]>([]);
 
     const [chatLoading, setChatLoading] = useState(false);
-
-    const [showSideBar, setShowSideBar] = useState(false);
 
     const [lat, setLat] = useState(22.4955);
     const [lng, setLng] = useState(88.3709);
@@ -83,24 +81,25 @@ export default function ChatPage() {
     }
 
     useEffect(() => {
-        const botWelcomeMessage: ChatModelInterface = {
-            body: "Welcome to <b>GuardianX</b>: Your friend indeed for all emergency situations. Please tell me how can I help you out!",
-            sender: "Bot",
-            id: uuidv4()
-        }
-
-        getLocation();
-
-        setChats([botWelcomeMessage]);
-
-    }, []);
-
-    useEffect(() => {
         socket.current = new WebSocket('wss://zivy0ttms5.execute-api.us-east-1.amazonaws.com/production/');
+
+        setChatLoading(true);
 
         socket.current.onopen = () => {
             console.log("Opened");
             toast.success("Connection Successful");
+
+            const botWelcomeMessage: ChatModelInterface = {
+                body: "Welcome to <b>GuardianX</b>: Your friend indeed for all emergency situations. Please tell me how can I help you out!",
+                sender: "Bot",
+                id: uuidv4()
+            }
+
+            setChatLoading(false);
+
+            getLocation();
+
+            setChats([botWelcomeMessage]);
         }
 
         socket.current.onclose = () => {
@@ -182,48 +181,11 @@ export default function ChatPage() {
         );
     });
 
-    const toggleSideBar = () => {
-        console.log("Action bar toggled")
-        setShowSideBar((state) => !state)
-        // return clearTimeout(action);
-    }
-
     return (
         <div className="h-screen flex flex-row overflow-y-hidden font-inter">
-            <div
-                className={`h-screen max-w-[350px] flex ease-in duration-500 transition ${showSideBar ? "opacity-100" : "opacity-0 hidden"} flex-col bg-gray-50 shadow-sm`}>
-                <div id="profile_name" className="flex bg-gray-100 items-center gap-x-2 py-[14px] px-8">
-                    <Avatar className="bg-gray-600 flex items-center justify-center">
-                        <AvatarImage
-                            src="https://img.freepik.com/free-psd/3d-illustration-human-avatar-profile_23-2150671124.jpg?t=st=1713808692~exp=1713809292~hmac=8b9b96c34cfad1f792b4a0b0d2109a4bfd077a89ec1a0973039fb1883d2cba4d"
-                            alt="@shadcn"/>
-                        <AvatarFallback>PP</AvatarFallback>
-                    </Avatar>
-                    <p className="font-bold text-lg">{name.current}</p>
-                </div>
-                <div className="flex-1">
-                    <div id="profile_name" className="flex items-center gap-x-2 py-[14px] px-8">
-                        <Avatar className="flex items-center justify-center">
-                            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn"/>
-                            <AvatarFallback>PP</AvatarFallback>
-                        </Avatar>
-                        <div>
-                            <h1 className="text-sm font-bold">Guardian X</h1>
-                            <p className="text-[0.75rem]">Online</p>
-                        </div>
-                    </div>
-                    <Separator/>
-                </div>
-                <div>
-                    <Button onClick={() => navigate('/')} className="w-full rounded-none">Exit Chat</Button>
-                </div>
-            </div>
             <div className="h-screen flex flex-1 flex-col overflow-y-hidden">
                 <header className="bg-gray-100 py-3 border-b-2 space-x-8 flex items-center border-gray-200 shadow-sm">
-                    <Button variant="ghost" className="mx-6" onClick={toggleSideBar}>
-                        <Menu/>
-                    </Button>
-                    <div className="flex flex-row w-full gap-x-4">
+                    <div className="flex flex-row w-full gap-x-4 container">
                         <Avatar className="bg-gray-100 flex items-center justify-center">
                             <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn"/>
                             <AvatarFallback>GX</AvatarFallback>
@@ -233,16 +195,28 @@ export default function ChatPage() {
                             <p className="font-inter font-medium text-sm leading-tight">Online</p>
                         </div>
                     </div>
+
+                    <div className="px-12">
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button variant="link" onClick={() => navigate('/')}><X/></Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Exit Chat</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    </div>
+
                 </header>
                 <ScrollArea className="flex-1 overflow-y-auto bg-chat-2">
                     <div className=" container my-6 space-y-2">
                         {chatDisplaySection}
+                        {chatLoading && <ChatLoader/>}
                         <div ref={chatSection}/>
                     </div>
                 </ScrollArea>
-                <div className="w-full overflow-x-hidden">
-                    <BarLoader width={1700} loading={chatLoading} speedMultiplier={0.4} color="#1d4ed8"/>
-                </div>
                 <footer className="w-full overflow-x-hidden">
                     <div className="bg-gray-100 py-3 border-t-2 border-gray-200 shadow-sm">
                         <div className="container">
@@ -257,12 +231,15 @@ export default function ChatPage() {
                                             <FormItem className="flex-1">
                                                 <FormControl>
                                                     <Textarea
+                                                        rows={1}
                                                         placeholder="Enter your message here" {...field} />
                                                 </FormControl>
                                             </FormItem>
                                         )}
                                     />
-                                    <Button variant="outline">Send</Button>
+                                    <Button variant="outline">
+                                        <SendHorizontal/>
+                                    </Button>
                                 </form>
                             </Form>
                         </div>
