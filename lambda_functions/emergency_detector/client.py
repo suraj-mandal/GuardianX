@@ -1,14 +1,16 @@
 from opensearchpy import OpenSearch, RequestsHttpConnection, AWSV4SignerAuth
 import boto3
 
-OPENSEARCH_HOST = 'i1o27w0knre7eevhhr3i.us-east-1.aoss.amazonaws.com'
-REGION = 'us-east-1'
-OPENSEARCH_SERVERLESS_SERVICE = 'aoss'
+import os
+
+OPENSEARCH_HOST = os.environ.get('OPENSEARCH_HOST')
+REGION = os.environ.get('REGION')
+OPENSEARCH_SERVERLESS_SERVICE = os.environ.get('OPENSEARCH_SERVERLESS_SERVICE')
 
 
 class Client:
-    def __init__(self, service):
-        self.client = boto3.client(service)
+    def __init__(self, service, **kwargs):
+        self.client = boto3.client(service, **kwargs)
 
     @property
     def client(self):
@@ -22,6 +24,10 @@ class Client:
 class BedrockRuntimeClient(Client):
     def __init__(self):
         super().__init__('bedrock-runtime')
+
+class ApiGatewayClient(Client):
+    def __init__(self, url):
+        super().__init__('apigatewaymanagementapi', endpoint_url=url)
 
 
 class OpensearchClient:
@@ -41,3 +47,8 @@ class OpensearchClient:
     @client.setter
     def client(self, new_client):
         self.__client = new_client
+
+
+class S3Client(Client):
+    def __init__(self):
+        super().__init__('s3')
