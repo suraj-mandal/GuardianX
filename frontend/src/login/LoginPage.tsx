@@ -12,10 +12,25 @@ export default function LoginPage() {
     const navigate = useNavigate();
     const [animate, setAnimate] = useState(true);
 
+    const [locationIndex, setLocationIndex] = useState(0);
+
+    const bgImagesList = [
+        'bg-hero-image-1',
+        'bg-hero-image-2',
+        'bg-hero-image-3',
+        'bg-hero-image-4',
+        'bg-hero-image-5'
+    ]
+
+    useEffect(() => {
+        setLocationIndex(Math.floor(Math.random()*bgImagesList.length));
+    }, []);
+
     useEffect(() => {
         if (isLoggedIn) {
             navigate("/");
         }
+
     }, [isLoggedIn, navigate]);
 
     useEffect(() => {
@@ -30,7 +45,7 @@ export default function LoginPage() {
     return (
         <div className="h-screen w-full lg:flex lg:flex-row bg-slate-50 font-inter">
             {/* will hold the images carousel */}
-            <div className="basis-5/12 hidden lg:flex lg:flex-col justify-end bg-hero-image-1 bg-cover">
+            <div className={`basis-5/12 hidden lg:flex lg:flex-col justify-end ${bgImagesList[locationIndex]} bg-cover`}>
                 <div className="text-white my-24 mx-12 space-y-2">
                     <div
                         className={`text-7xl leading-tight tracking-[-0.4rem] font-bold ease-in duration-500 transition ${animate ? 'opacity-0' : 'opacity-100'}`}>

@@ -62,7 +62,11 @@ module.exports = {
                 inter: ['Inter', 'sans-serif'],
             },
             backgroundImage: {
-                'hero-image-1': "url('src/assets/robot_image.jpg')",
+                'hero-image-1': "url('src/assets/hero_bg_1.jpg')",
+                'hero-image-2': "url('src/assets/hero_bg_2.jpg')",
+                'hero-image-3': "url('src/assets/hero_bg_3.jpg')",
+                'hero-image-4': "url('src/assets/hero_bg_4.jpg')",
+                'hero-image-5': "url('src/assets/hero_bg_5.jpg')",
                 'chat-1': "url('src/assets/chat_bg.jpg')",
                 'chat-2': "url('src/assets/chat_bg_2.jpg')",
             }
