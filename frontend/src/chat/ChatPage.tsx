@@ -5,7 +5,7 @@ import ChatFormSchema from "./schema/chat-schema";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Form, FormControl, FormField, FormItem} from "@/components/ui/form";
 import {Button} from "@/components/ui/button";
-import {useEffect, useState, useRef} from "react";
+import {useEffect, useState, useRef, KeyboardEvent} from "react";
 import {v4 as uuidv4} from 'uuid';
 import {Textarea} from "@/components/ui/textarea";
 import toast from "react-hot-toast";
@@ -190,7 +190,7 @@ export default function ChatPage() {
         );
     });
 
-    const submitOnPressingEnter = (e: KeyboardEvent) => {
+    const submitOnPressingEnter = (e: KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key.toLowerCase() === 'enter' && !e.shiftKey) {
             console.log('Enter key pressed!');
             if (userQueryForm) {
@@ -252,7 +252,7 @@ export default function ChatPage() {
                                             <FormItem className="flex-1">
                                                 <FormControl>
                                                     <Textarea
-                                                        onKeyDown={submitOnPressingEnter}
+                                                        onKeyDown={(e) => submitOnPressingEnter(e)}
                                                         rows={1}
                                                         placeholder="Enter your message here" {...field} />
                                                 </FormControl>
