@@ -1,12 +1,14 @@
 import Colors from "./constants/color-constants.ts";
 import {Toaster as ReactHotToastToaster} from "react-hot-toast";
 import {Outlet} from "react-router";
+import { Toaster } from "@/components/ui/sonner";
 
 export default function App() {
 
     return (
         <div className="bg-gray-50">
             <main>
+                <Toaster />
                 <ReactHotToastToaster
                     position="top-center"
                     reverseOrder={false}

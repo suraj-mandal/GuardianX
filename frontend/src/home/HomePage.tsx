@@ -5,10 +5,13 @@ import { UserDto } from "@/models/user-dto.ts";
 import { Button } from "@/components/ui/button.tsx";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import useSubscription from "@/hooks/use-subscription";
+import { toast } from "sonner";
 
 export default function HomePage() {
 
     const { isLoggedIn, logout } = useAuthentication();
+    const {isSubscribed, subscribe, unsubscribe} = useSubscription();
     const navigate = useNavigate();
 
     const [name, setName] = useState("");
@@ -24,11 +27,32 @@ export default function HomePage() {
     }, [isLoggedIn, navigate]);
 
     useEffect(() => {
-        localStorage.getItem("")
+        let timeout = null;
+        if (!isSubscribed) {
+            // show toast here
+            toast("Please check your mail",  {
+                description: "Please subscribe to our topics so that we can send you notifications",
+                action: {
+                    label: "Close",
+                    onClick: () => {
+                        console.log("Thanks for subscribing!");
+                    }
+                }
+            });
+            timeout = setTimeout(() => {
+                subscribe();
+            }, 1000);
+        }
+        return () => {
+            if (timeout != null) {
+                clearTimeout(timeout);
+            }
+        }
     }, []);
 
     const performLogout = () => {
         logout();
+        unsubscribe();
         navigate("/login");
     }
 
