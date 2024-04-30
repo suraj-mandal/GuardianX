@@ -181,8 +181,8 @@ export default function ChatPage() {
                         <AvatarFallback>GX</AvatarFallback>
                     </Avatar>
                     <div className={`max-w-[450px] rounded ${chat.sender === "Bot" ? 'bg-green-100' : 'bg-gray-100'}`}>
-                        <p dangerouslySetInnerHTML={updatedHtml} className="mx-4 my-2">
-                        </p>
+                        <div dangerouslySetInnerHTML={updatedHtml} className="mx-4 my-2 px-2 list-disc">
+                        </div>
                     </div>
                 </div>
 
